@@ -5,7 +5,7 @@ import (
 )
 
 func TestRandomGrease(t *testing.T) {
-	for x := 0; x < 1024; x++ {
+	for range 1024 {
 		g := RandomGrease()
 		if len(g) != 2 {
 			t.Fatalf("grease wrong length: %d", g)

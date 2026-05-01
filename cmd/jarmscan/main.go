@@ -41,8 +41,8 @@ func CrackPortsWithDefaults(pspec string, defaults []uint16) ([]int, error) {
 	// Use a map to dedup and shuffle ports
 	ports := make(map[int]bool)
 
-	bits := strings.Split(pspec, ",")
-	for _, bit := range bits {
+	bits := strings.SplitSeq(pspec, ",")
+	for bit := range bits {
 
 		// Support the magic strings "default" and "defaults"
 		if bit == "default" || bit == "defaults" {
@@ -208,19 +208,15 @@ func main() {
 	wgt := sync.WaitGroup{}
 
 	for x := 0; x <= *workerCount; x++ {
-		wgt.Add(1)
-		go func() {
-			defer wgt.Done()
+		wgt.Go(func() {
 			for t := range tch {
 				Fingerprint(t, och)
 			}
-		}()
+		})
 	}
 
 	// Output consolidator
-	wgo.Add(1)
-	go func() {
-		defer wgo.Done()
+	wgo.Go(func() {
 		for o := range och {
 			if o.Error != nil {
 				log.Printf("failed to scan %s:%d: %s", o.Target.Host, o.Target.Port, o.Error)
@@ -233,7 +229,7 @@ func main() {
 			}
 
 		}
-	}()
+	})
 
 	// Process targets
 	for _, s := range flag.Args() {
@@ -286,10 +282,8 @@ func main() {
 			hch := make(chan string, 1)
 			qch := make(chan int, 1)
 			hwg := sync.WaitGroup{}
-			hwg.Add(1)
 
-			go func() {
-				defer hwg.Done()
+			hwg.Go(func() {
 				for thost := range hch {
 					ports := defaultPorts
 					if t.Port != 0 {
@@ -304,7 +298,7 @@ func main() {
 						}
 					}
 				}
-			}()
+			})
 
 			// Try to iterate the host as a CIDR range
 			herr := jarm.AddressesFromCIDR(host, hch, qch)

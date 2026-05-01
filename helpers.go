@@ -122,7 +122,7 @@ func randomWalkIPv4Range(min uint32, max uint32, out chan string, quit chan int)
 	}
 
 	q := p % s
-	for v := int64(0); v < s; v++ {
+	for range s {
 		ip := UInt2IPv4(min + uint32(q))
 		select {
 		case <-quit:
