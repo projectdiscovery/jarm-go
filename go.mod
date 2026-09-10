@@ -1,4 +1,4 @@
-module github.com/hdm/jarm-go
+module github.com/projectdiscovery/jarm-go
 
 go 1.25.0
 
